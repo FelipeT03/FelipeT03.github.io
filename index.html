@@ -36,17 +36,75 @@
     
     <h2>Conjunto de datos: CoNLL-2002 (Español)</h2>
     <p>
-        Los modelos fueron entrenados y evaluados utilizando el conjunto de datos CoNLL-2002 para español. Este conjunto de datos está específicamente diseñado para tareas de Reconocimiento de Entidades Nombradas (NER) y contiene texto anotado con varios tipos de entidades, incluyendo nombres de personas, en los cuales nos enfocamos para este proyecto.
+        Los modelos fueron entrenados y evaluados utilizando el conjunto de datos CoNLL-2002 para español. Este conjunto de datos está específicamente diseñado para tareas de Reconocimiento de Entidades Nombradas (NER) y contiene texto anotado con varios tipos de entidades, incluyendo nombres de personas, en los cuales se enfoca este proyecto.
     </p>
+    <p>        
+        El set de datos se compone de frases en español, donde cada palabra está etiquetada como un tipo de entidad (por ejemplo, "O" para palabras que no son entidades, "B-PER" para el inicio de un nombre de persona, y "I-PER" para palabras adicionales en un nombre de persona). El objetivo del modelo es predecir si una palabra es un nombre de persona o no. En este caso se utilizarán las entidades "B-PER" e "I-PER" como datos personales.
+    </p>
+    
+    <!-- Agregar la sección dentro de un cuadro y formatear con una lista -->
+    <div style="border: 2px solid #000; padding: 10px; margin: 20px 0; background-color: #f8f8f8;">
+        <strong>El conjunto de datos se divide en:</strong>
+        <ul>
+            <li>Entrenamiento: 8324 frases</li>
+            <li>Validación: 1916 frases</li>
+            <li>Prueba: 1518 frases</li>
+        </ul>
+    </div>
+    
 
     <h2>¿Qué es un Modelo BiLSTM?</h2>
     <p>
         Un modelo BiLSTM (Memoria a Corto-Largo Plazo Bidireccional) es un tipo de red neuronal recurrente que procesa secuencias de entrada en ambas direcciones, hacia adelante y hacia atrás. Este enfoque bidireccional permite al modelo capturar el contexto tanto de elementos pasados como futuros en una secuencia, haciéndolo particularmente efectivo para tareas como el Reconocimiento de Entidades Nombradas.
     </p>
 
+    <h2>¿Por qué BiLSTM?</h2>
+    <p>
+        Los datos personales se pueden encontrar en cualquier sección de una oración, inluyendo el inicio de la misma. La arquitectura BiLSTM es capaz de capturar el contexto necesario para identificar estos elementos de datos personales en diferentes posiciones dentro de una frase. Además, la capacidad de procesar secuencias en ambas direcciones ayuda al modelo a comprender mejor el contexto y las relaciones entre las palabras en una oración.
+    </p>
+
+    <h2>Arquitectura del Modelo BiLSTM</h2>
+    <img src="https://www.researchgate.net/profile/Latifa-Nabila-Harfiya/publication/344751031/figure/fig2/AS:948365760155651@1603119425682/The-unfolded-architecture-of-Bidirectional-LSTM-BiLSTM-with-three-consecutive-steps.png" 
+         alt="Arquitectura del Modelo BiLSTM" 
+         style="width: 100%; max-width: 800px; height: auto; display: block; margin: 20px 0;">
+
+
+    <h2>Modelo</h2>
+    <p>
+        <strong>Tokenizer:</strong><br>
+        Se utiliza un tokenizer personalizado diseñado para dividir el texto en palabras individuales y asignar etiquetas según las entidades detectadas. La tokenización se realiza simplemente dividiendo la frase en palabras utilizando split(), lo que separa las palabras por espacios.
+    
+        <br><br>
+    
+        <strong>Embeddings:</strong><br>
+        Los embeddings son vectores de representación numérica que capturan las características semánticas de las palabras. En este proyecto, los embeddings se entrenan desde cero, adaptándose específicamente al conjunto de datos de nombres y entidades en español. Esto permite capturar de manera más precisa las relaciones contextuales relevantes para la identificación de datos personales. El modelo usa índices de una función hash como entrada para una capa de nn.Embedding dentro del modelo a ser entrenada.
+    
+        <br><br>
+    
+        <strong>Entrenamiento desde cero:</strong><br>
+        El modelo y los embeddings se entrenan completamente desde cero, permitiendo que el sistema aprenda directamente de los datos etiquetados sin depender de modelos preentrenados. Esto se realiza con el fin de identificar si el modelo puede aprender de forma efectiva enfocándose más en el contexto de la oración que en las palabras individuales o incluso solo memorizar nombres personales.
+    
+        <br><br>
+    
+        <strong>Early Stopping:</strong><br>
+        Se utiliza early stopping para prevenir el sobreajuste del modelo. El entrenamiento se detendrá automáticamente si no se observa una mejora en la pérdida de validación (validation loss) en 0.01 durante 3 épocas consecutivas. 
+    
+        <br><br>
+    
+        <strong>Métricas principales:</strong><br>
+        Las métricas evaluadas incluyen:
+        <ul>
+            <li><strong>Accuracy:</strong> La proporción de predicciones correctas sobre el total de predicciones.</li>
+            <li><strong>Precision:</strong> La capacidad del modelo para evitar falsos positivos al identificar nombres de personas.</li>
+            <li><strong>Recall:</strong> Mide la capacidad del modelo para identificar correctamente todos los nombres de personas presentes en el texto.</li>
+            <li><strong>F1-Score:</strong> Una métrica combinada que balancea la precisión y el recall, proporcionando una medida robusta del rendimiento global del modelo.</li>
+        </ul>
+    </p>
+         
+
     <h2>Opción 1: Modelo BiLSTM a nivel de token</h2>
     <p>
-        En este enfoque, el modelo predice si cada token individual en una frase es un elemento de datos personales (específicamente, un nombre de persona).
+        Se realizan dos variantes del modelo. En el primer enfoque, el modelo predice si cada token individual en una frase es un elemento de datos personales (específicamente, un nombre de persona).
     </p>
     <h3>Beneficios de la predicción a nivel de token:</h3>
     <ul>
@@ -61,26 +119,26 @@
             <th>Valor</th>
         </tr>
         <tr>
-            <td>Exactitud</td>
-            <td>0.985</td>
+            <td>Accuracy</td>
+            <td>0.995</td>
         </tr>
         <tr>
-            <td>Precisión</td>
-            <td>0.856</td>
+            <td>Precision</td>
+            <td>0.838</td>
         </tr>
         <tr>
-            <td>Exhaustividad</td>
-            <td>0.871</td>
+            <td>Recall</td>
+            <td>0.693</td>
         </tr>
         <tr>
-            <td>Puntuación F1</td>
-            <td>0.863</td>
+            <td>F1 Score</td>
+            <td>0.759</td>
         </tr>
     </table>
-
+    Es importante notar que el valor elevado de Accuracy se debe a que la mayoría de los tokens no son datos personales, lo que puede llevar a un desbalance en la métrica. Por otro lado, el F1 Score proporciona una medida más equilibrada del rendimiento del modelo.
     <h2>Opción 2: Modelo BiLSTM a nivel de frase</h2>
     <p>
-        Este enfoque predice si una frase en su totalidad contiene algún dato personal (nombres de personas), sin especificar qué tokens son los datos personales.
+        Este enfoque predice si una frase en su totalidad contiene algún dato personal (nombres de personas), sin especificar qué tokens son los datos personales. Ya que en este caso no se especifica directamente si un token es un nombre de persona, sino si la frase en su totalidad contiene un nombre de persona, se busca que el modelo se enfoque más en el contexto de la oración que en el primer modelo.
     </p>
     <h3>Resultados:</h3>
     <table>
@@ -89,29 +147,251 @@
             <th>Valor</th>
         </tr>
         <tr>
-            <td>Exactitud</td>
-            <td>0.912</td>
+            <td>Accuracy</td>
+            <td>0.840</td>
         </tr>
         <tr>
-            <td>Precisión</td>
-            <td>0.897</td>
+            <td>Precision</td>
+            <td>0.736</td>
         </tr>
         <tr>
-            <td>Exhaustividad</td>
-            <td>0.925</td>
+            <td>Recall</td>
+            <td>0.780</td>
         </tr>
         <tr>
-            <td>Puntuación F1</td>
-            <td>0.911</td>
+            <td>F1 Score</td>
+            <td>0.758</td>
         </tr>
     </table>
 
     <h2>Conclusión</h2>
     <p>
-        Ambos modelos muestran un fuerte rendimiento en la identificación de datos personales, con el modelo a nivel de token (Opción 1) proporcionando información más detallada sobre la ubicación de los datos personales dentro de las frases. El modelo a nivel de frase (Opción 2) muestra métricas generales ligeramente más altas, posiblemente debido a la tarea de clasificación binaria más simple a nivel de frase.
+        Ambos modelos muestran un rendimiento aceptable en la identificación de datos personales, tomando en cuenta que no se aprovecha embeddings contextuales ni preentrenados y no usa un tokenizer sofisticado que maneje subtokens o representaciones más avanzadas. Sin embargo, muestra que es capaz de identificar datos personales en función del contexto más que de las palabras individuales. Esto llega a ser relavante para casos de personas con nombres poco comunes.
     </p>
+    <h2>Trabajo futuro</h2>
     <p>
-        La elección entre estos modelos dependería del caso de uso específico: si se requiere una identificación precisa de los elementos de datos personales, la Opción 1 sería preferible. Si solo se necesita una clasificación binaria de frases que contienen datos personales, la Opción 2 podría ser más adecuada.
+        Para futuras iteraciones, se podría explorar el uso de embeddings preentrenados, como BERT o Word2Vec, para capturar mejor las relaciones semánticas y contextuales entre las palabras. Además, se podría mejorar el tokenizer para manejar subtokens y representaciones más detalladas de las palabras, lo que podría mejorar la precisión en la identificación de datos personales. Esto se puede realizar tomando en cuenta que este modelo muestra que no solo se enfoca en las palabras individuales sino también se apoya en el contexto de la oración.
     </p>
+    <h2>Ejemplos</h2>
+    <p>
+        A continuación, se presentan algunos ejemplos de frases y las predicciones del modelo BiLSTM a nivel de token y a nivel de frase:
+    </p>
+    <style>
+        .correct {
+          background-color: rgba(0, 255, 0, 0.3); /* Verde semitransparente */
+        }
+        .incorrect {
+          background-color: rgba(255, 0, 0, 0.3); /* Rojo semitransparente */
+        }
+      </style>
+      
+      <table class="dataframe table table-bordered">
+        <thead>
+          <tr style="text-align: right;">
+            <th>Frase</th>
+            <th>Opción 1 (Detecta)</th>
+            <th>Opción 2 (Detecta)</th>
+            <th>Contiene Nombre de Persona</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Anastasio del Villar estaba revisando los documentos en la oficina central.</td>
+            <td class="incorrect">No</td>
+            <td class="incorrect">No</td>
+            <td>Sí</td>
+          </tr>
+          <tr>
+            <td>Maristela Pérez caminaba por el parque durante la tarde soleada.</td>
+            <td class="correct">Sí</td>
+            <td class="correct">Sí</td>
+            <td>Sí</td>
+          </tr>
+          <tr>
+            <td>Olaf Monteverde nunca había visto un paisaje tan hermoso en las montañas.</td>
+            <td class="incorrect">No</td>
+            <td class="incorrect">No</td>
+            <td>Sí</td>
+          </tr>
+          <tr>
+            <td>Caetana Saldívar participó en la conferencia sobre energías renovables.</td>
+            <td class="correct">Sí</td>
+            <td class="correct">Sí</td>
+            <td>Sí</td>
+          </tr>
+          <tr>
+            <td>Zuleika Quintanilla ganó el concurso de poesía juvenil con su obra.</td>
+            <td class="correct">Sí</td>
+            <td class="correct">Sí</td>
+            <td>Sí</td>
+          </tr>
+          <tr>
+            <td>Isidro Yupanqui resolvió el problema matemático más complejo del examen.</td>
+            <td class="incorrect">No</td>
+            <td class="incorrect">No</td>
+            <td>Sí</td>
+          </tr>
+          <tr>
+            <td>Milenka Guadalupe organizó un evento benéfico en su comunidad.</td>
+            <td class="incorrect">No</td>
+            <td class="correct">Sí</td>
+            <td>Sí</td>
+          </tr>
+          <tr>
+            <td>Leocadio Bustamante tiene un interés especial en la historia precolombina.</td>
+            <td class="correct">Sí</td>
+            <td class="incorrect">No</td>
+            <td>Sí</td>
+          </tr>
+          <tr>
+            <td>Nicomedes Aráoz presentó un nuevo proyecto innovador en la feria de ciencias.</td>
+            <td class="correct">Sí</td>
+            <td class="correct">Sí</td>
+            <td>Sí</td>
+          </tr>
+          <tr>
+            <td>Edelmira Balcázar siempre soñó con tener una librería en el centro de la ciudad.</td>
+            <td class="correct">Sí</td>
+            <td class="correct">Sí</td>
+            <td>Sí</td>
+          </tr>
+          <tr>
+            <td>El sol se escondía lentamente detrás de las colinas, pintando el cielo de naranja y rosa.</td>
+            <td class="correct">No</td>
+            <td class="correct">No</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td>Las plantas crecían frondosamente después de la temporada de lluvias.</td>
+            <td class="correct">No</td>
+            <td class="correct">No</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td>El café recién hecho llenó la cocina con un aroma agradable y reconfortante.</td>
+            <td class="correct">No</td>
+            <td class="incorrect">Sí</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td>El libro en la estantería era uno de los más antiguos de la colección.</td>
+            <td class="correct">No</td>
+            <td class="correct">No</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td>La máquina expendedora se descompuso justo cuando más la necesitaban.</td>
+            <td class="correct">No</td>
+            <td class="correct">No</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td>El tren salió a tiempo, cruzando los campos verdes en su trayecto.</td>
+            <td class="correct">No</td>
+            <td class="incorrect">Sí</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td>El equipo trabajó arduamente para completar el proyecto antes del plazo.</td>
+            <td class="correct">No</td>
+            <td class="correct">No</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td>Las olas rompían suavemente contra la orilla, creando un sonido relajante.</td>
+            <td class="correct">No</td>
+            <td class="incorrect">Sí</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td>Las luces de la ciudad brillaban intensamente durante la noche.</td>
+            <td class="correct">No</td>
+            <td class="correct">No</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td>La receta secreta de la abuela siempre había sido el corazón de las reuniones familiares.</td>
+            <td class="correct">No</td>
+            <td class="correct">No</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td>Mientras Juan Pérez preparaba el desayuno, su teléfono comenzó a sonar.</td>
+            <td class="correct">Sí</td>
+            <td class="correct">Sí</td>
+            <td>Sí</td>
+          </tr>
+          <tr>
+            <td>La reunión fue organizada por María González y su equipo de trabajo.</td>
+            <td class="correct">Sí</td>
+            <td class="correct">Sí</td>
+            <td>Sí</td>
+          </tr>
+          <tr>
+            <td>Luis Ramírez llegó temprano al trabajo para revisar los informes pendientes.</td>
+            <td class="correct">Sí</td>
+            <td class="correct">Sí</td>
+            <td>Sí</td>
+          </tr>
+          <tr>
+            <td>Durante la presentación, Ana López explicó detalladamente el proceso.</td>
+            <td class="correct">Sí</td>
+            <td class="correct">Sí</td>
+            <td>Sí</td>
+          </tr>
+          <tr>
+            <td>Carlos Sánchez estaba convencido de que la solución era la correcta.</td>
+            <td class="correct">Sí</td>
+            <td class="correct">Sí</td>
+            <td>Sí</td>
+          </tr>
+          <tr>
+            <td>Al final del día, Sofía Torres recogió los documentos y los guardó en la oficina.</td>
+            <td class="incorrect">No</td>
+            <td class="correct">Sí</td>
+            <td>Sí</td>
+          </tr>
+          <tr>
+            <td>La idea fue sugerida originalmente por José Rodríguez, aunque nadie lo recordaba.</td>
+            <td class="correct">Sí</td>
+            <td class="correct">Sí</td>
+            <td>Sí</td>
+          </tr>
+          <tr>
+            <td>Gabriela Fernández siempre llevaba una libreta para tomar notas importantes.</td>
+            <td class="correct">Sí</td>
+            <td class="incorrect">No</td>
+            <td>Sí</td>
+          </tr>
+          <tr>
+            <td>Después de la conferencia, Miguel Martínez se acercó a los ponentes para hacer preguntas.</td>
+            <td class="correct">Sí</td>
+            <td class="correct">Sí</td>
+            <td>Sí</td>
+          </tr>
+          <tr>
+            <td>Laura Morales decidió que era momento de cambiar de carrera y seguir su pasión.</td>
+            <td class="correct">Sí</td>
+            <td class="correct">Sí</td>
+            <td>Sí</td>
+          </tr>
+       
+      
+        </tbody>
+      </table>
+      
+      <h2>Código</h2>
+      <p>
+          El código del proyecto está disponible en GitHub. Te invito a explorar el repositorio, revisar el notebook y trabajar con los datos para experimentar y mejorar el modelo de detección de datos personales. Puedes ver el código completo, ejecutar los experimentos y contribuir al proyecto.
+      </p>
+      <p>
+          <a href="https://github.com/FelipeT03/NLP_PersonalInfoDetector/blob/main/NLP_project.ipynb" target="_blank" style="color: #007acc; text-decoration: none; font-weight: bold;">
+              🌐 Visita el repositorio en GitHub: NLP_PersonalInfoDetector
+          </a>
+      </p>
+      <p>
+          Siéntete libre de clonar el repositorio, realizar cambios y sugerir mejoras.
+      </p>
+      
 </body>
 </html>
