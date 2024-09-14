@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados del Modelo BiLSTM NER</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Resultados del Modelo BiLSTM NER</h1>
+    
+    <h2>Conjunto de datos: CoNLL-2002 (Español)</h2>
+    <p>
+        Los modelos fueron entrenados y evaluados utilizando el conjunto de datos CoNLL-2002 para español. Este conjunto de datos está específicamente diseñado para tareas de Reconocimiento de Entidades Nombradas (NER) y contiene texto anotado con varios tipos de entidades, incluyendo nombres de personas, en los cuales nos enfocamos para este proyecto.
+    </p>
+
+    <h2>¿Qué es un Modelo BiLSTM?</h2>
+    <p>
+        Un modelo BiLSTM (Memoria a Corto-Largo Plazo Bidireccional) es un tipo de red neuronal recurrente que procesa secuencias de entrada en ambas direcciones, hacia adelante y hacia atrás. Este enfoque bidireccional permite al modelo capturar el contexto tanto de elementos pasados como futuros en una secuencia, haciéndolo particularmente efectivo para tareas como el Reconocimiento de Entidades Nombradas.
+    </p>
+
+    <h2>Opción 1: Modelo BiLSTM a nivel de token</h2>
+    <p>
+        En este enfoque, el modelo predice si cada token individual en una frase es un elemento de datos personales (específicamente, un nombre de persona).
+    </p>
+    <h3>Beneficios de la predicción a nivel de token:</h3>
+    <ul>
+        <li>Identificación detallada: Puede señalar exactamente qué palabras en una frase son datos personales.</li>
+        <li>Consciente del contexto: La arquitectura BiLSTM permite al modelo considerar las palabras circundantes al hacer predicciones, mejorando la precisión.</li>
+        <li>Flexible: Puede manejar frases de diferentes longitudes e identificar múltiples elementos de datos personales en una sola frase.</li>
+    </ul>
+    <h3>Resultados:</h3>
+    <table>
+        <tr>
+            <th>Métrica</th>
+            <th>Valor</th>
+        </tr>
+        <tr>
+            <td>Exactitud</td>
+            <td>0.985</td>
+        </tr>
+        <tr>
+            <td>Precisión</td>
+            <td>0.856</td>
+        </tr>
+        <tr>
+            <td>Exhaustividad</td>
+            <td>0.871</td>
+        </tr>
+        <tr>
+            <td>Puntuación F1</td>
+            <td>0.863</td>
+        </tr>
+    </table>
+
+    <h2>Opción 2: Modelo BiLSTM a nivel de frase</h2>
+    <p>
+        Este enfoque predice si una frase en su totalidad contiene algún dato personal (nombres de personas), sin especificar qué tokens son los datos personales.
+    </p>
+    <h3>Resultados:</h3>
+    <table>
+        <tr>
+            <th>Métrica</th>
+            <th>Valor</th>
+        </tr>
+        <tr>
+            <td>Exactitud</td>
+            <td>0.912</td>
+        </tr>
+        <tr>
+            <td>Precisión</td>
+            <td>0.897</td>
+        </tr>
+        <tr>
+            <td>Exhaustividad</td>
+            <td>0.925</td>
+        </tr>
+        <tr>
+            <td>Puntuación F1</td>
+            <td>0.911</td>
+        </tr>
+    </table>
+
+    <h2>Conclusión</h2>
+    <p>
+        Ambos modelos muestran un fuerte rendimiento en la identificación de datos personales, con el modelo a nivel de token (Opción 1) proporcionando información más detallada sobre la ubicación de los datos personales dentro de las frases. El modelo a nivel de frase (Opción 2) muestra métricas generales ligeramente más altas, posiblemente debido a la tarea de clasificación binaria más simple a nivel de frase.
+    </p>
+    <p>
+        La elección entre estos modelos dependería del caso de uso específico: si se requiere una identificación precisa de los elementos de datos personales, la Opción 1 sería preferible. Si solo se necesita una clasificación binaria de frases que contienen datos personales, la Opción 2 podría ser más adecuada.
+    </p>
+</body>
+</html>
